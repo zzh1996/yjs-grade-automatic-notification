@@ -13,13 +13,17 @@ s = requests.session()
 
 def cas_login():
     logging.info('Logging in')
-    url = 'https://passport.ustc.edu.cn/login?service=http%3A%2F%2Fyjs%2Eustc%2Eedu%2Ecn%2Fdefault%2Easp'
-    r = s.get(url, timeout=config.req_timeout)
-    soup = BeautifulSoup(r.content, 'html5lib')
-    token = soup.find('input', {'name': '_token'})['value']
-    r = s.post(url, data={'_token': token, 'login': config.student_no, 'password': config.cas_password},
-               timeout=config.req_timeout)
-    if r.url == 'http://yjs.ustc.edu.cn/main.asp':
+    url = 'https://passport.ustc.edu.cn/login'
+    r = s.post(url, data={
+        'model': 'uplogin.jsp',
+        'service': 'http://yjs.ustc.edu.cn/default.asp',
+        'warn': '',
+        'showCode': '',
+        'button': '',
+        'username': config.student_no,
+        'password': config.cas_password
+    }, timeout=config.req_timeout)
+    if 'yjs.ustc.edu.cn/main.asp' in r.url:
         logging.info('Login success')
         return True
     else:
